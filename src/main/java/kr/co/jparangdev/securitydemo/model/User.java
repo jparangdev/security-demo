@@ -9,7 +9,10 @@ import javax.persistence.Id;
 
 import org.hibernate.annotations.CreationTimestamp;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
@@ -17,6 +20,9 @@ import lombok.ToString;
 @Getter
 @Setter
 @ToString
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class User {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -27,6 +33,10 @@ public class User {
 	private String email;
 	private String role;
 
+	private String provider; // 로그인 제공자
+	private String providerId; //
+
 	@CreationTimestamp
 	private LocalDateTime createDate;
+
 }

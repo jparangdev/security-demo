@@ -1,10 +1,13 @@
 package kr.co.jparangdev.securitydemo.config.auth;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Map;
 
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.oauth2.core.user.OAuth2User;
 
 import kr.co.jparangdev.securitydemo.model.User;
 
@@ -16,12 +19,32 @@ import kr.co.jparangdev.securitydemo.model.User;
  *
  * Security Session => Authentication => UserDetails
 */
-public class PrincipalDetails implements UserDetails {
+public class PrincipalDetails implements UserDetails, OAuth2User, Serializable {
 
 	private User user; // 콤포지션?
+	private Map<String, Object> attributes;
 
 	public PrincipalDetails(User user) {
 		this.user = user;
+	}
+
+	public User getUser() {
+		return user;
+	}
+
+	public PrincipalDetails(User user, Map<String, Object> attributes) {
+		this.user = user;
+		this.attributes = attributes;
+	}
+
+	@Override
+	public Map<String, Object> getAttributes() {
+		return attributes; // OAuth로그인시 주는 정보드를 저장해야한다.
+	}
+
+	@Override
+	public String getName() {
+		return null; // 별로 중요하지안핟고함
 	}
 
 	// 해당 User의 권한을 리턴하는 곳
@@ -35,7 +58,7 @@ public class PrincipalDetails implements UserDetails {
 				return user.getRole();
 			}
 		});
-		return null;
+		return collection;
 	}
 
 	@Override
