@@ -1,13 +1,13 @@
 spring:
     datasource:
         driver-class-name: org.mariadb.jdbc.Driver
-        url: jdbc:mariadb://localhost:20010/security?serverTimezone=Asia/Seoul
+        url: jdbc:mariadb://localhost:23306/security?serverTimezone=Asia/Seoul
         username: security
-        password: dev
+        password: ddev
     jpa:
         show-sql: true
         hibernate:
-            ddl-auto: update
+            ddl-auto: create
             naming:
                 physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
     security:
