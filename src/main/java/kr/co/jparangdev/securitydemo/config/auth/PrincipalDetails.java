@@ -55,7 +55,7 @@ public class PrincipalDetails implements UserDetails, OAuth2User, Serializable {
 		collection.add(new GrantedAuthority() {
 			@Override
 			public String getAuthority() {
-				return user.getRole();
+				return user.getRoles();
 			}
 		});
 		return collection;

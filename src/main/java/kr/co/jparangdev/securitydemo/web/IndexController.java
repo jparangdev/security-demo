@@ -1,11 +1,9 @@
 package kr.co.jparangdev.securitydemo.web;
 
 import org.springframework.security.access.annotation.Secured;
-import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Controller;
@@ -78,7 +76,7 @@ public class IndexController {
 	@PostMapping("/join")
 	public String join(User user) {
 		System.out.println(user.toString());
-		user.setRole("ROLE_USER");
+		user.setRoles("ROLE_USER");
 		user.setPassword(encoder.encode(user.getPassword())); // 암호화하지 않는다면 시큐리티에서 로그인 처리를 하지않는다.
 		userRepository.save(user);
 		return "redirect:/loginForm";

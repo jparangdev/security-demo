@@ -1,6 +1,9 @@
 package kr.co.jparangdev.securitydemo.model;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -31,12 +34,19 @@ public class User {
 	private String username;
 	private String password;
 	private String email;
-	private String role;
+	private String roles; // USER, ADMIN
 
 	private String provider; // 로그인 제공자
 	private String providerId; //
 
 	@CreationTimestamp
 	private LocalDateTime createDate;
+
+	public List<String> getRoleList(){
+		if(this.roles.length() > 0) {
+			return Arrays.asList(roles.split(","));
+		}
+		return new ArrayList<>();
+	}
 
 }

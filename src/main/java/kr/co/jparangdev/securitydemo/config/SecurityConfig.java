@@ -6,9 +6,12 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.web.filter.CorsFilter;
 
 import kr.co.jparangdev.securitydemo.config.oauth.PrincipalOauth2UserService;
+import kr.co.jparangdev.securitydemo.filter.MyFilter1;
 import lombok.RequiredArgsConstructor;
 
 /**
@@ -27,26 +30,27 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
 	private final PrincipalOauth2UserService principalOauth2UserService;
 
+	private final CorsFilter corsFilter;
+
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
+		// http.addFilterAfter(new MyFilter1());
 		http.csrf().disable();
-		http.authorizeRequests()
-			.antMatchers("/user/**").authenticated() // 인증받아야 들어갈 수 있는 주소
-			.antMatchers("/manager/**").access("hasRole('ROLE_ADMIN') or hasRole('ROLE_MANAGER')") // 인증뿐만아니라 어드민과 매니저권한이 있어야하낟.
-			.antMatchers("/admin/**").access("hasRole('ROLE_ADMIN')") // 어드민권한이 있어야한다.
-			.anyRequest().permitAll() // 이외 모든페이지 권한 허용?
+		http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS) // 세션사용안함
 			.and()
-			.formLogin()
-			.loginPage("/loginForm")
-			// .usernameParameter("username2") // username을 따로 변경해줄 때 사용
-			.loginProcessingUrl("/login") // login이 호출되면 시큐리티가 알아서 로그인을 진행해준다.
-			.defaultSuccessUrl("/") // 로그인 성공시 진행될 Url
-			.and()
-			.oauth2Login()
-			.loginPage("/loginForm")
-			.userInfoEndpoint()
-			.userService(principalOauth2UserService)// 구글 인증후 후처리가 필요함 Tip. 코드X(액세스토큰+사용자프로필정보 O)
-		;
+			.addFilter(corsFilter) // @CroossOrigin(인증X), 시큐리티에 필터 인증을 하는게 좋다.
+			.formLogin().disable() // 폼로그인 사용안함
+			.httpBasic().disable()
+			.authorizeRequests()
+			.antMatchers("/api/v1/user/**")
+			.access("hasRole('ROLE_USER') or hasRole('ROLE_MANAGER') or hasRole('ROLE_ADMIN')")
+			.antMatchers("/api/v1/manager/**")
+			.access("hasRole('ROLE_MANAGER') or hasRole('ROLE_ADMIN')")
+			.antMatchers("/api/v1/admin/**")
+			.access("hasRole('ROLE_ADMIN')")
+			.anyRequest()
+			.permitAll()
+		; // 세션을 사용하지 않겠다는 설정
 	}
 
 	@Bean // 해당 메소드로 리턴되는 오브젝트를 컨테이너에 빈으로 등록
