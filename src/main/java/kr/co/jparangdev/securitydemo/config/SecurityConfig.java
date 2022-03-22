@@ -8,10 +8,13 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
+import org.springframework.security.web.context.SecurityContextPersistenceFilter;
 import org.springframework.web.filter.CorsFilter;
 
 import kr.co.jparangdev.securitydemo.config.oauth.PrincipalOauth2UserService;
 import kr.co.jparangdev.securitydemo.filter.MyFilter1;
+import kr.co.jparangdev.securitydemo.filter.MyFilter3;
 import lombok.RequiredArgsConstructor;
 
 /**
@@ -34,7 +37,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
-		// http.addFilterAfter(new MyFilter1());
+		http.addFilterBefore(new MyFilter3(), SecurityContextPersistenceFilter.class); // 시큐리티 필터 체인이 일반적인 필터체인보다 일찍돈다.
 		http.csrf().disable();
 		http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS) // 세션사용안함
 			.and()
