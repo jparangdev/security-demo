@@ -51,14 +51,11 @@ public class PrincipalDetails implements UserDetails, OAuth2User, Serializable {
 	// 다만 타입변경이 필요한다.
 	@Override
 	public Collection<? extends GrantedAuthority> getAuthorities() {
-		Collection<GrantedAuthority> collection = new ArrayList<>();
-		collection.add(new GrantedAuthority() {
-			@Override
-			public String getAuthority() {
-				return user.getRoles();
-			}
+		Collection<GrantedAuthority> authorities = new ArrayList<>();
+		user.getRoleList().forEach(role->{
+			authorities.add(()->role);
 		});
-		return collection;
+		return authorities;
 	}
 
 	@Override

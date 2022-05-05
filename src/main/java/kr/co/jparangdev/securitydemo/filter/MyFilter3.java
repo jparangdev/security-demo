@@ -24,17 +24,18 @@ public class MyFilter3 implements Filter {
 		// 그때 토큰이 넘어오면 내가 만든토큰이 맞는지만 확인하고 검증만하면된다 .(RSA, HS256)
 		System.out.println("필터3");
 		// 토큰 : 코스 - 토큰을 얻어내서 토큰이 있다면 필터를 진행하고 아니면 못하게
-		if(req.getMethod().equals("POST")) {
-			String headerAuth = req.getHeader("Authorization");
-			System.out.println(headerAuth);
-
-			if(headerAuth.equals("cos")) {
-				chain.doFilter(request,response);
-			} else {
-				PrintWriter out = res.getWriter();
-				out.println("인증안됨");
-			}
-		}
+		// if(req.getMethod().equals("POST")) {
+		// 	String headerAuth = req.getHeader("Authorization");
+		// 	System.out.println(headerAuth);
+		//
+		// 	if(headerAuth.equals("cos")) {
+		// 		chain.doFilter(request,response);
+		// 	} else {
+		// 		PrintWriter out = res.getWriter();
+		// 		out.println("인증안됨");
+		// 	}
+		// }
 		// 필터 3는 시큐리티가 작동되기 전에 동작되어야하기 때문에 SecurityConfig에서 설정해줘야한다.
+		chain.doFilter(request,response);
 	}
 }

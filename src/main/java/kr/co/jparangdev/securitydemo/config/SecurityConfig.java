@@ -15,6 +15,7 @@ import org.springframework.web.filter.CorsFilter;
 import kr.co.jparangdev.securitydemo.config.oauth.PrincipalOauth2UserService;
 import kr.co.jparangdev.securitydemo.filter.MyFilter1;
 import kr.co.jparangdev.securitydemo.filter.MyFilter3;
+import kr.co.jparangdev.securitydemo.jwt.JwtAuthenticationFilter;
 import lombok.RequiredArgsConstructor;
 
 /**
@@ -37,13 +38,14 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
-		http.addFilterBefore(new MyFilter3(), SecurityContextPersistenceFilter.class); // 시큐리티 필터 체인이 일반적인 필터체인보다 일찍돈다.
+		// http.addFilterBefore(new MyFilter3(), SecurityContextPersistenceFilter.class); // 시큐리티 필터 체인이 일반적인 필터체인보다 일찍돈다.
 		http.csrf().disable();
 		http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS) // 세션사용안함
 			.and()
 			.addFilter(corsFilter) // @CroossOrigin(인증X), 시큐리티에 필터 인증을 하는게 좋다.
 			.formLogin().disable() // 폼로그인 사용안함
 			.httpBasic().disable()
+			.addFilter(new JwtAuthenticationFilter(authenticationManager())) // .formLogin().disable()으로 비활성화된 필터를 다시 달아준다. AuthenticationManager를 던져줘야함 WebSecurityConfigurerAdapter가 이미 함수로 가지고 있다.
 			.authorizeRequests()
 			.antMatchers("/api/v1/user/**")
 			.access("hasRole('ROLE_USER') or hasRole('ROLE_MANAGER') or hasRole('ROLE_ADMIN')")
@@ -53,12 +55,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 			.access("hasRole('ROLE_ADMIN')")
 			.anyRequest()
 			.permitAll()
+
 		; // 세션을 사용하지 않겠다는 설정
 	}
 
-	@Bean // 해당 메소드로 리턴되는 오브젝트를 컨테이너에 빈으로 등록
-	public BCryptPasswordEncoder encoder() {
-		return new BCryptPasswordEncoder();
-	}
+
 
 }
